@@ -42,7 +42,6 @@ const FilterDrawer = ({
     setSelectedOptions({});
   };
 
-  console.log(selectedOptions, "selectedOptions");
 
   return (
     <Box
@@ -100,7 +99,6 @@ const FilterDrawer = ({
               </Box>
             ))}
           </VStack>
-         {console.log(selectedOptions,"selectedOptions.lengthselectedOptions.length")}
          {Object.keys(selectedOptions).length > 0 &&  <Button
             colorScheme="red"
             onClick={handleClearAllFilters}

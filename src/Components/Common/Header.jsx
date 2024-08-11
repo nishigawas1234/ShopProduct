@@ -5,12 +5,12 @@ import {
   Link,
   Badge,
 } from '@chakra-ui/react';
-import { MenuIcon, ShoopingCart, Logo } from '../Icons';
+import { ShoopingCart, Logo } from '../Icons';
 import { CardDrawer } from '..';
 import { useSelector } from 'react-redux';
 import { getCartData } from '../../Redux/Cart/cartSelector';
 
-const Header = (props) => {
+const Header = () => {
   const cartDataArray = useSelector(getCartData);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -18,8 +18,6 @@ const Header = (props) => {
 
   const onOpenDrawer = () => setIsDrawerOpen(true);
   const onCloseDrawer = () => setIsDrawerOpen(false);
-
-  // Detect scroll position
   useEffect(() => {
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
@@ -31,12 +29,9 @@ const Header = (props) => {
     };
   }, []);
 
-  // Determine background color based on scroll position
   const bgColor = 'transparent';
   const textColor = scrollPosition > 500 ? 'gray.500' : 'contrast.200';
   const iconColor  = scrollPosition > 500 ? "gray.500" : "#F8F8F8"; 
-
-  // Navigation items
   const navItems = [
     {
       isButton: false,
@@ -72,11 +67,8 @@ const Header = (props) => {
           mx="auto"
           px={4}
         >
-          {/* Website Name */}
+      
           <a href='#'><Logo color={textColor} /></a>
-          
-
-          {/* Menu Items */}
           <Flex >
           <Flex alignItems="center" gap={6} mr="24">
             {navItems.map((item, i) => (
@@ -95,8 +87,6 @@ const Header = (props) => {
               </Box>
             ))}
           </Flex>
-
-          {/* Cart Icon */}
           <Flex alignItems="center" gap={4}>
            
 
@@ -122,7 +112,6 @@ const Header = (props) => {
         </Flex>
       </Box>
 
-      {/* Card Drawer Component */}
       <CardDrawer
         isOpen={isDrawerOpen}
         onClose={onCloseDrawer}
