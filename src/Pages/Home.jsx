@@ -1,6 +1,4 @@
 import { Box, Button, Grid, Text, VStack } from "@chakra-ui/react";
-import { Header, Footer } from "../Components";
-import Product from "./Product";
 
 export default function Home() {
   return (

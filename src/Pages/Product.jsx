@@ -1,10 +1,5 @@
-import {
-  Box,
-  Grid,
-  Tag,
-  TagLabel,
-} from "@chakra-ui/react";
-import { FilterDrawer, ProductCard } from "../Components";
+import { Box, Grid, Tag, TagLabel } from "@chakra-ui/react";
+import { FilterDrawer, ProductCard, Skelton } from "../Components";
 import { useEffect, useState } from "react";
 import Pagination from "../Components/Pagination";
 import axios from "../Api/axios";
@@ -33,10 +28,11 @@ export default function Product() {
       const response = await axios.get(`/reactjsTest/products`);
       setAllProduct(response.data.products);
       dispatch(setProductData(response.data.products));
+      setLoading(false);
     } catch (err) {
       setError(err.message || "An error occurred");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getAllFilters = async () => {
@@ -68,28 +64,13 @@ export default function Product() {
     setSelectedFilters(filters);
   };
 
-  const handleFilterRemove = (filterName, optionId) => {
-    setSelectedFilters((prev) => {
-      const updatedOptions = {
-        ...prev,
-        [filterName]: prev[filterName]?.filter((id) => id !== optionId),
-      };
-
-      if (updatedOptions[filterName]?.length === 0) {
-        delete updatedOptions[filterName];
-      }
-
-      handleFilterChange(updatedOptions);
-      return updatedOptions;
-    });
-  };
-
   const handleClearAllFilters = () => {
     setSelectedFilters({});
   };
 
   const filterProducts = () => {
-    if (!allProduct || Object.keys(selectedFilters).length === 0) return allProduct;
+    if (!allProduct || Object.keys(selectedFilters).length === 0)
+      return allProduct;
 
     return allProduct.filter((product) => {
       return Object.keys(selectedFilters).every((filterKey) => {
@@ -113,60 +94,66 @@ export default function Product() {
   return (
     <>
       <Box id="Product" p={4} py={12} position="relative">
-        <FilterDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          filters={filterOptions}
-          onFilterChange={handleFilterChange}
-          onClearAll={handleClearAllFilters}
-        />
-
-        {Object.keys(selectedFilters).length > 0 && (
-          <Box mb={4}>
-            <Box d="flex" flexWrap="wrap" gap={2}>
-              {Object.keys(selectedFilters).map((filterName) =>
-                selectedFilters[filterName].map((optionId) => {
-                  const option = filterOptions
-                    ?.find((filter) => filter.name === filterName)
-                    ?.options.find((option) => option.id === optionId);
-                  return (
-                    <Tag
-                      key={optionId}
-                      size="lg"
-                      variant="subtle"
-                      colorScheme="teal"
-                      mr="4"
-                    >
-                      
-                      <TagLabel>{option?.name || filterName}</TagLabel>
-                    </Tag>
-                  );
-                })
-              )}
-            </Box>
-          </Box>
-        )}
-        {paginatedProducts.length ? (
-          <Grid templateColumns="repeat(3, 1fr)" gap={6} ms="250px">
-            {paginatedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                filterOptions={filterOptions}
-              />
-            ))}
-          </Grid>
+        {loading ? (
+          <Box>
+          <Skelton />
+        </Box>
         ) : (
-          <Box h="600px" w="100%">
-            No data Found
-          </Box>
+          <>
+            {" "}
+            <FilterDrawer
+              isOpen={isDrawerOpen}
+              onClose={() => setIsDrawerOpen(false)}
+              filters={filterOptions}
+              onFilterChange={handleFilterChange}
+              onClearAll={handleClearAllFilters}
+            />
+            {Object.keys(selectedFilters).length > 0 && (
+              <Box mb={4}>
+                <Box d="flex" flexWrap="wrap" gap={2}>
+                  {Object.keys(selectedFilters).map((filterName) =>
+                    selectedFilters[filterName].map((optionId) => {
+                      const option = filterOptions
+                        ?.find((filter) => filter.name === filterName)
+                        ?.options.find((option) => option.id === optionId);
+                      return (
+                        <Tag
+                          key={optionId}
+                          size="lg"
+                          variant="subtle"
+                          colorScheme="teal"
+                          mr="4"
+                        >
+                          <TagLabel>{option?.name || filterName}</TagLabel>
+                        </Tag>
+                      );
+                    })
+                  )}
+                </Box>
+              </Box>
+            )}
+            {paginatedProducts.length ? (
+              <Grid templateColumns="repeat(3, 1fr)" gap={6} ms="250px">
+                {paginatedProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    filterOptions={filterOptions}
+                  />
+                ))}
+              </Grid>
+            ) : (
+              <Box h="600px" w="100%">
+                No data Found
+              </Box>
+            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          </>
         )}
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
       </Box>
     </>
   );
